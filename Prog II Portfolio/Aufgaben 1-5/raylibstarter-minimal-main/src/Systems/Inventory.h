@@ -178,6 +178,7 @@ public:
                 exitButtonHovered = false;
             }
 
+            // Sort buttons
             for (int i = 0; i < sortRecs.size(); i++)
             {
                 if (CheckCollisionPointRec(GetMousePosition(), sortRecs[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
@@ -207,13 +208,6 @@ public:
 
                 }
             }
-
-            if (IsKeyPressed(KEY_R))
-                sortInv(Weight, false);
-            if (IsKeyPressed(KEY_T))
-                sortInv(Price, false);
-            if (IsKeyPressed(KEY_Y))
-                sortInv(Name, false);
 
             if (IsKeyPressed(KEY_U))
             {
@@ -308,125 +302,124 @@ public:
 
     void sortInv(SortType sortType, bool ascending)
     {
-        TempItem sortHelper;
-        switch (sortType)
+        if (!inventory.empty())
         {
-            case Weight:
-                TraceLog(LOG_INFO, "Sorting for weight");
-                if (ascending)
-                {
-                    TraceLog(LOG_INFO, "Ascending");
-                    for (int i = 0; i < inventory.size() - 1; i++)
+            TempItem sortHelper;
+            switch (sortType)
+            {
+                case Weight:
+                    TraceLog(LOG_INFO, "Sorting for weight");
+                    if (ascending)
                     {
-                        for (int j = 0; j < (inventory.size() - i - 1); j++)
+                        TraceLog(LOG_INFO, "Ascending");
+                        for (int i = 0; i < inventory.size() - 1; i++)
                         {
-                            if (inventory[j].weight > inventory[j + 1].weight)
+                            for (int j = 0; j < (inventory.size() - i - 1); j++)
                             {
-                                sortHelper = inventory[j];
-                                inventory[j] = inventory[j + 1];
-                                inventory[j + 1] = sortHelper;
+                                if (inventory[j].weight > inventory[j + 1].weight)
+                                {
+                                    sortHelper = inventory[j];
+                                    inventory[j] = inventory[j + 1];
+                                    inventory[j + 1] = sortHelper;
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    TraceLog(LOG_INFO, "Descending");
-                    int flag = 1;
-                    for (int i = 1; (i <= inventory.size()) && flag; i++)
+                    else
                     {
-                        flag = 0;
-                        for (int j = 0; j < (inventory.size() - 1); j++)
-                        {
-                            if (inventory[j + 1].weight > inventory[j].weight)
-                            {
-                                sortHelper = inventory[j];
-                                inventory[j] = inventory[j + 1];
-                                inventory[j + 1] = sortHelper;
-                                flag = 1;
+                        TraceLog(LOG_INFO, "Descending");
+                        int flag = 1;
+                        for (int i = 1; (i <= inventory.size()) && flag; i++) {
+                            flag = 0;
+                            for (int j = 0; j < (inventory.size() - 1); j++) {
+                                if (inventory[j + 1].weight > inventory[j].weight)
+                                {
+                                    sortHelper = inventory[j];
+                                    inventory[j] = inventory[j + 1];
+                                    inventory[j + 1] = sortHelper;
+                                    flag = 1;
+                                }
                             }
                         }
                     }
-                }
-                break;
-            case Price:
-                TraceLog(LOG_INFO, "Sorting for price");
-                if (ascending)
-                {
-                    TraceLog(LOG_INFO, "Ascending");
-                    for (int i = 0; i < inventory.size() - 1; i++)
-                    {
-                        for (int j = 0; j < (inventory.size() - i - 1); j++)
+                    break;
+                case Price:
+                    TraceLog(LOG_INFO, "Sorting for price");
+                    if (ascending) {
+                        TraceLog(LOG_INFO, "Ascending");
+                        for (int i = 0; i < inventory.size() - 1; i++)
                         {
-                            if (inventory[j].price > inventory[j + 1].price)
+                            for (int j = 0; j < (inventory.size() - i - 1); j++)
                             {
-                                sortHelper = inventory[j];
-                                inventory[j] = inventory[j + 1];
-                                inventory[j + 1] = sortHelper;
+                                if (inventory[j].price > inventory[j + 1].price)
+                                {
+                                    sortHelper = inventory[j];
+                                    inventory[j] = inventory[j + 1];
+                                    inventory[j + 1] = sortHelper;
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    TraceLog(LOG_INFO, "Descending");
-                    int flag = 1;
-                    for (int i = 1; (i <= inventory.size()) && flag; i++)
+                    else
                     {
-                        flag = 0;
-                        for (int j = 0; j < (inventory.size() - 1); j++)
+                        TraceLog(LOG_INFO, "Descending");
+                        int flag = 1;
+                        for (int i = 1; (i <= inventory.size()) && flag; i++)
                         {
-                            if (inventory[j + 1].price > inventory[j].price)
+                            flag = 0;
+                            for (int j = 0; j < (inventory.size() - 1); j++)
                             {
-                                sortHelper = inventory[j];
-                                inventory[j] = inventory[j + 1];
-                                inventory[j + 1] = sortHelper;
-                                flag = 1;
+                                if (inventory[j + 1].price > inventory[j].price)
+                                {
+                                    sortHelper = inventory[j];
+                                    inventory[j] = inventory[j + 1];
+                                    inventory[j + 1] = sortHelper;
+                                    flag = 1;
+                                }
                             }
                         }
                     }
-                }
-                break;
-            case Name:
-                TraceLog(LOG_INFO, "Sorting for name");
-                if (ascending)
-                {
-                    TraceLog(LOG_INFO, "Ascending");
-                    for (int i = 0; i < inventory.size() - 1; i++)
+                    break;
+                case Name:
+                    TraceLog(LOG_INFO, "Sorting for name");
+                    if (ascending)
                     {
-                        for (int j = 0; j < (inventory.size() - i - 1); j++)
+                        TraceLog(LOG_INFO, "Ascending");
+                        for (int i = 0; i < inventory.size() - 1; i++)
                         {
-                            if (inventory[j].name > inventory[j + 1].name)
+                            for (int j = 0; j < (inventory.size() - i - 1); j++)
                             {
-                                sortHelper = inventory[j];
-                                inventory[j] = inventory[j + 1];
-                                inventory[j + 1] = sortHelper;
+                                if (inventory[j].name > inventory[j + 1].name)
+                                {
+                                    sortHelper = inventory[j];
+                                    inventory[j] = inventory[j + 1];
+                                    inventory[j + 1] = sortHelper;
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    TraceLog(LOG_INFO, "Descending");
-                    int flag = 1;
-                    for (int i = 1; (i <= inventory.size()) && flag; i++)
+                    else
                     {
-                        flag = 0;
-                        for (int j = 0; j < (inventory.size() - 1); j++)
+                        TraceLog(LOG_INFO, "Descending");
+                        int flag = 1;
+                        for (int i = 1; (i <= inventory.size()) && flag; i++)
                         {
-                            if (inventory[j + 1].name > inventory[j].name)
+                            flag = 0;
+                            for (int j = 0; j < (inventory.size() - 1); j++)
                             {
-                                sortHelper = inventory[j];
-                                inventory[j] = inventory[j + 1];
-                                inventory[j + 1] = sortHelper;
-                                flag = 1;
+                                if (inventory[j + 1].name > inventory[j].name)
+                                {
+                                    sortHelper = inventory[j];
+                                    inventory[j] = inventory[j + 1];
+                                    inventory[j + 1] = sortHelper;
+                                    flag = 1;
+                                }
                             }
                         }
                     }
-                }
-                break;
+                    break;
+            }
         }
-
     }
 
     float getCurrentWeight()

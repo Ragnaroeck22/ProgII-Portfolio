@@ -245,7 +245,7 @@ void MapManager::generateMap() {
     // Spawn chests
     int chestsSpawned = 0;
     while (chestsSpawned < 7) {
-        // Search random path tile (bad in theory, works in practice)
+        // Search random path tile (bad in theory, works fine in practice)
         int randX;
         int randY;
         do {
@@ -455,6 +455,95 @@ Vector2 MapManager::getTileCoords(std::shared_ptr<Tile> tile)
 
 void MapManager::calcCost()
 {
+
+
+
+
+    
+/*
+    std::vector<std::shared_ptr<Tile>> vecOpen; //the set of nodes to be evaluated
+    std::vector<std::shared_ptr<Tile>> vecClosed; //the set of nodes already evaluated
+    vecOpen.push_back(start); //add the start node to OPEN
+
+    bool pathFound = false;
+
+    while (!pathFound)
+    {
+        std::shared_ptr<Tile> currentTile = vecOpen[0]; //current = node in OPEN with the lowest f_cost
+        for (int i = 0; i < vecOpen.size(); i++)
+        {
+            if (currentTile->getCostF() < vecOpen[i]->getCostF())
+            {
+                currentTile = vecOpen[i];
+            }
+        }
+
+        for (int i = 0; i < vecOpen.size(); i++) //remove current from OPEN
+        {
+            if (vecOpen[i] == currentTile)
+            {
+                vecOpen.erase(vecOpen.cbegin() + i);
+            }
+        }
+        vecClosed.push_back(currentTile); //add current to CLOSED
+
+        if (currentTile == exit) //if current is the target node //path has been found
+        {
+            pathFound = true;
+            return;
+        }
+
+        std::vector<std::shared_ptr<Tile>> neighbors = getNeighbors(getTileCoords(currentTile));
+
+        for (int i = 0; i < neighbors.size(); i++)//    foreach neighbour of the current node
+        {
+            bool inClosed = false;
+            for (int j = 0; j < vecClosed.size(); j++)
+            {
+                if (neighbors[i] == vecClosed[i])
+                {
+                    inClosed = true;
+                }
+            }
+            if (neighbors[i]->type == Blocked || inClosed == true)//if neighbour is not traversable or neighbour is in CLOSED
+            {
+                //skip to the next neighbour (do nothing)
+            }
+            else
+            {
+                // Check if path is shorter (less parents)
+                //int newPathLength = currentTile->calcPathLength() + 1;
+
+                bool inOpen = false;
+                for (int j = 0; j < vecOpen.size(); j++)
+                {
+                    if (neighbors[i] == vecOpen[i])
+                    {
+                        inOpen = true;
+                    }
+                }
+                // newPathLength < neighbors[i]->calcPathLength() ||
+                if (!inOpen)//if new path to neighbour is shorter OR neighbour is not in OPEN
+                {
+                    TraceLog(LOG_INFO, "=====================================");
+                    calcCostG(neighbors[i]);
+                    calcCostH(neighbors[i]);
+                    neighbors[i]->parentTile = currentTile;//set parent of neighbour to current
+                    if (!inOpen)//if neighbour is not in OPEN
+                    {
+                        vecOpen.push_back(neighbors[i]);// add neighbor to open
+                    }
+                }
+            }
+        }
+}
+
+
+*/
+
+
+
+/*
     std::vector<std::shared_ptr<Tile>> vecOpen;
 
     //Set up the start tile
@@ -507,13 +596,15 @@ void MapManager::calcCost()
                 //This can happen multiple times per tile
 
                 //Set G value
+
+*/
                 /*
                 I first need to check if the neighbour tile is diagonal or not.
                 If it's diagonal, I would add 14 to the current G, otherwise 10.
                 I only change the G value if the new value would be smaller than
                 the current one.
                 */
-
+/*
                 if (currentTile->costG + 1 < neighbours[i]->costG) {
                     neighbours[i]->costG = currentTile->costG + 1;
 
@@ -541,8 +632,7 @@ void MapManager::calcCost()
         }
 
     }
-
-
+*/
 
 
 
@@ -807,13 +897,19 @@ void MapManager::checkWinCondition()
     {
         if (autoTraversing)
         {
-            autoTraversing = false;
+            autoTraversing = false; // Just in case, should happen automatically
             player->myInventory->open();
         }
         if (!player->myInventory->getOpen()) // Changes map only when player is finished with his inventory (is closed)
         {
+            items.clear();
             this->generateMap();
             this->calcCost();
+
+            for (int i = 0; i < actors.size(); i++)
+            {
+                actors[i]->updateCollision = true;
+            }
 
             this->player->setPosition(this->startPos);
             TraceLog(LOG_INFO, "Setting player position:");

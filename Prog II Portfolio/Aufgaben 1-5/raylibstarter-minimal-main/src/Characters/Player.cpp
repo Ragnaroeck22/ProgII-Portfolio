@@ -16,22 +16,6 @@ Player::Player()
 {
     this->myInventory = std::make_shared<Inventory<ItemBase>>(10);
 
-    // TEST
-    PlainNecklace testN(0,0);
-    RingMinor testR(0,0);
-    Sword testS(0, 0);
-    BoneNecklace testB(0, 0);
-    Spear testSp(0, 0);
-    Axe testA(0, 0);
-    this->myInventory->addItem(testN);
-    this->myInventory->addItem(testR);
-    this->myInventory->addItem(testS);
-    this->myInventory->addItem(testSp);
-    this->myInventory->addItem(testA);
-    this->myInventory->addItem(testB);
-
-    this->myInventory->equipItem(2);
-
     this->texture = LoadTexture("assets/graphics/obstacles.png");
     this->textureRec.width = this->texture.width / 16;
     this->textureRec.height = this->texture.height / 16;

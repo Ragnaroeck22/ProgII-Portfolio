@@ -23,3 +23,24 @@ int Tile::getCostF()
 {
     return costG + costH;
 }
+
+int Tile::calcPathLength()
+{
+    TraceLog(LOG_INFO, "Calling internal path length");
+    return calcPathLengthInternal(parentTile);
+}
+
+int Tile::calcPathLengthInternal(std::shared_ptr<Tile> tileToInspect)
+{
+    if (tileToInspect == nullptr)
+    {
+        TraceLog(LOG_INFO, "Return value");
+        return 0;
+    }
+    else
+    {
+        TraceLog(LOG_INFO, "Make call");
+        return calcPathLengthInternal(tileToInspect->parentTile) + 1;
+    }
+}
+
