@@ -18,4 +18,5 @@ PlainNecklace::PlainNecklace(int posX, int posY)
     this->weight = 0.3;
     this->price = 115;
     this->name = "Plain necklace";
+    description = "An old necklace, usually worn by grandmas";
 }

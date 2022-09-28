@@ -49,6 +49,8 @@ public:
 
     void checkActorCollisions();
 
+    void checkForChests();
+
     // For A* algorithm
     std::vector<std::shared_ptr<Tile>> getNeighbors(Vector2 coordinates);
     Vector2 getTileCoords(std::shared_ptr<Tile> tile);

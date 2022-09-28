@@ -15,7 +15,8 @@ BoneNecklace::BoneNecklace(int posX, int posY)
     this->texRec.x = texRec.width * 3;
     this->texRec.y = 0;
     this->type = TypeNecklace;
-    this->weight = 0.3;
-    this->price = 115;
-    this->name = "Plain necklace";
+    this->weight = 0.35;
+    this->price = 180;
+    this->name = "Bone necklace";
+    description = "Extra swag, but at what cost?";
 }

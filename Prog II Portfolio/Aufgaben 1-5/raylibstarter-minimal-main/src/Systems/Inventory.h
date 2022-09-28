@@ -65,6 +65,14 @@ private:
     Texture2D jewelrySheetSmall;
     Texture2D jewelrySheetLarge;
 
+    // Sorting
+    std::vector<Rectangle> sortRecs;
+    bool lastAscending = false;
+
+    // Carry weight
+    float currentWeight;
+    float maxWeight;
+    bool overencumbered;
 
     // Methods
 public:
@@ -91,6 +99,9 @@ public:
         buttonDropRec. width = panel.width / 7;
         buttonDropRec.height = panel.height / 10;
         showItemButtons = false;
+
+        calcWeight();
+
 
         // Item slots
         slotWeaponRec = {panel.x + panel.width / 25, panel.y + panel.height / 10,
@@ -122,6 +133,19 @@ public:
         ImageResize(&workingImage, slotWeaponRec.width * 4, slotWeaponRec.height);
         jewelrySheetLarge = LoadTextureFromImage(workingImage);
 
+        // Sorting
+        Rectangle helperRec;
+        helperRec.width = panel.width / 15;
+        helperRec.height = panel.height / 15;
+        helperRec.x = exitButtonRec.x - panel.width / 10;
+        helperRec.y = panel.y;
+
+        for (int i = 0; i < 3; i++)
+        {
+            sortRecs.push_back(helperRec);
+            helperRec.x = helperRec.x - panel.width / 10;
+        }
+
     };
 
     // ======== UPDATE-FUNCTIONS ========
@@ -144,8 +168,46 @@ public:
                 exitButtonHovered = false;
             }
 
+            for (int i = 0; i < sortRecs.size(); i++)
+            {
+                if (CheckCollisionPointRec(GetMousePosition(), sortRecs[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    if (lastAscending)
+                    {
+                        lastAscending = false;
+                    }
+                    else
+                    {
+                        lastAscending = true;
+                    }
+                    switch (i)
+                    {
+                        case 0:
+                            sortInv(Name, lastAscending);
+                            break;
+                        case 1:
+                            sortInv(Price, lastAscending);
+                            break;
+                        case 2:
+                            sortInv(Weight, lastAscending);
+                            break;
+                        default:
+                            sortInv(Weight, lastAscending);
+                    }
+
+                }
+            }
+
+            if (IsKeyPressed(KEY_R))
+                sortInv(Weight, false);
+            if (IsKeyPressed(KEY_T))
+                sortInv(Price, false);
+            if (IsKeyPressed(KEY_Y))
+                sortInv(Name, false);
+
             getSlotHover();
 
+            // Item buttons
             if (showItemButtons)
             {
                 if (CheckCollisionPointRec(GetMousePosition(), buttonEquipRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
@@ -228,6 +290,170 @@ public:
 
         }
     };
+
+    void sortInv(SortType sortType, bool ascending)
+    {
+        TempItem sortHelper;
+        switch (sortType)
+        {
+            case Weight:
+                if (ascending)
+                {
+                    for (int i = 0; i < inventory.size(); i++)
+                    {
+                        for (int j = i; j < inventory.size(); j++)
+                        {
+                            if (inventory[j].weight < inventory[j - 1].weight)
+                            {
+                                sortHelper = inventory[j];
+                                inventory[j] = inventory[j - 1];
+                                inventory[j - 1] = sortHelper;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+
+                    int flag = 1;
+                    for (int i = 1; (i <= inventory.size()) && flag; i++)
+                    {
+                        flag = 0;
+                        for (int j = 0; j < (inventory.size() - 1); j++)
+                        {
+                            if (inventory[j + 1].weight > inventory[j].weight)
+                            {
+                                sortHelper = inventory[j];
+                                inventory[j] = inventory[j + 1];
+                                inventory[j + 1] = sortHelper;
+                                flag = 1;
+                            }
+                        }
+                    }
+                }
+                break;
+            case Price:
+                if (ascending)
+                {
+                    for (int i = 0; i < inventory.size(); i++)
+                    {
+                        for (int j = i; j < inventory.size(); j++)
+                        {
+                            if (inventory[j].price < inventory[j - 1].price)
+                            {
+                                sortHelper = inventory[j];
+                                inventory[j] = inventory[j - 1];
+                                inventory[j - 1] = sortHelper;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+
+                    int flag = 1;
+                    for (int i = 1; (i <= inventory.size()) && flag; i++)
+                    {
+                        flag = 0;
+                        for (int j = 0; j < (inventory.size() - 1); j++)
+                        {
+                            if (inventory[j + 1].price > inventory[j].price)
+                            {
+                                sortHelper = inventory[j];
+                                inventory[j] = inventory[j + 1];
+                                inventory[j + 1] = sortHelper;
+                                flag = 1;
+                            }
+                        }
+                    }
+                }
+                break;
+            case Name:
+                if (ascending)
+                {
+                    for (int i = 0; i < inventory.size(); i++)
+                    {
+                        for (int j = i; j < inventory.size(); j++)
+                        {
+                            if (inventory[j].name < inventory[j - 1].name)
+                            {
+                                sortHelper = inventory[j];
+                                inventory[j] = inventory[j - 1];
+                                inventory[j - 1] = sortHelper;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+
+                    int flag = 1;
+                    for (int i = 1; (i <= inventory.size()) && flag; i++)
+                    {
+                        flag = 0;
+                        for (int j = 0; j < (inventory.size() - 1); j++)
+                        {
+                            if (inventory[j + 1].name > inventory[j].name)
+                            {
+                                sortHelper = inventory[j];
+                                inventory[j] = inventory[j + 1];
+                                inventory[j + 1] = sortHelper;
+                                flag = 1;
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+
+    }
+
+    float getCurrentWeight()
+    {
+        float weight = 0;
+        for (int i = 0; i < inventory.size(); i++)
+        {
+            weight = weight + inventory[i].weight;
+        }
+        if (!slotWeapon.empty())
+            weight = weight + slotWeapon[0].weight;
+        if (!slotNecklace.empty())
+            weight = weight + slotNecklace[0].weight;
+        if (!slotRing.empty())
+            weight = weight + slotRing[0].weight;
+
+        return weight;
+    }
+
+    float getItemStrength()
+    {
+        float strength = 0;
+
+        if (!slotWeapon.empty())
+            strength = strength + slotWeapon[0].strength;
+        if (!slotNecklace.empty())
+            strength = strength + slotNecklace[0].strength;
+        if (!slotRing.empty())
+            strength = strength + slotRing[0].strength;
+
+        return strength;
+    }
+
+    void calcWeight()
+    {
+        overencumbered = false;
+        currentWeight = getCurrentWeight();
+        maxWeight = (getItemStrength() + 3);
+        if (currentWeight > maxWeight)
+        {
+            overencumbered = true;
+        }
+    }
+
+    bool getOverencumbered()
+    {
+        return overencumbered;
+    }
 
     void getSlotHover()
     {
@@ -377,6 +603,38 @@ public:
                 DrawTextureRec(jewelrySheetLarge, texRecAdjusted, {slotRingRec.x, slotRingRec.y}, WHITE);
             }
 
+            // Draw sort buttons
+            Color sortColor;
+            if (lastAscending)
+            {
+                sortColor = GREEN;
+            }
+            else
+            {
+                sortColor = BLUE;
+            }
+            for (int i = 0; i < sortRecs.size(); i++)
+            {
+                DrawRectangle(sortRecs[i].x, sortRecs[i].y, sortRecs[i].width, sortRecs[i].height, sortColor);
+            }
+            DrawTextEx(GetFontDefault(), "N",
+                       {sortRecs[0].x + sortRecs[0].width / 2 - MeasureTextEx(GetFontDefault(), "N", 30, 0).x/2,
+                        sortRecs[0].y + sortRecs[0].height / 2 - MeasureTextEx(GetFontDefault(), "N", 30, 0).y/2},
+                        30, 0, WHITE);
+            DrawTextEx(GetFontDefault(), "$",
+                       {sortRecs[1].x + sortRecs[1].width / 2 - MeasureTextEx(GetFontDefault(), "$", 30, 0).x/2,
+                        sortRecs[1].y + sortRecs[1].height / 2 - MeasureTextEx(GetFontDefault(), "$", 30, 0).y/2},
+                       30, 0, WHITE);
+            DrawTextEx(GetFontDefault(), "W",
+                       {sortRecs[2].x + sortRecs[2].width / 2 - MeasureTextEx(GetFontDefault(), "W", 30, 0).x/2,
+                        sortRecs[2].y + sortRecs[2].height / 2 - MeasureTextEx(GetFontDefault(), "W", 30, 0).y/2},
+                       30, 0, WHITE);
+
+            DrawTextEx(GetFontDefault(), "Sort:",
+                       {sortRecs[2].x - panel.width / 8 - MeasureTextEx(GetFontDefault(), "W", 30, 5).x/2,
+                        sortRecs[2].y + sortRecs[2].height / 2 - MeasureTextEx(GetFontDefault(), "W", 30, 5).y/2},
+                       30, 5, WHITE);
+
             // Draw item buttons
             if (showItemButtons)
             {
@@ -419,6 +677,18 @@ public:
                 }
             }
 
+            // Draw carry weight
+            Color outputColor = WHITE;
+            std::string outputString = "Carry weight: ";
+            outputString.append(std::to_string(getCurrentWeight()));
+            outputString.append(" / ");
+            outputString.append(std::to_string(maxWeight));
+            if (getCurrentWeight() > maxWeight)
+            {
+                outputColor = RED;
+            }
+            DrawText(outputString.c_str(), panel.x + panel.width - (MeasureText(outputString.c_str(), 30) * 1.05),
+                     panel.y + panel.height - panel.height / 20, 30, outputColor);
         }
     };
 
@@ -440,6 +710,7 @@ public:
         if (slot < this->inventory.size() && slot >= 0)
         {
             this->inventory[slot] = item;
+            calcWeight();
             return true;
         }
         else
@@ -454,6 +725,7 @@ public:
         if (this->inventory.size() < this->slotCount)
         {
             this->inventory.push_back(item);
+            calcWeight();
             return true;
         }
         else
@@ -467,6 +739,7 @@ public:
     {
             TempItem item = this->inventory[slot];
             this->inventory.erase(inventory.cbegin() + slot);
+            calcWeight();
             return item;
     };
 
@@ -511,6 +784,7 @@ public:
                     this->inventory.erase(inventory.cbegin() + itemSlot);
                     break;
             }
+            calcWeight();
         }
 
 
@@ -591,8 +865,8 @@ public:
                     }
                 }
         }
+        calcWeight();
     }
-
 
 
     // GUI

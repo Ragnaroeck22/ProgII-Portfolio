@@ -6,6 +6,16 @@
 #include "../Tiles/TileExit.h"
 #include "../Tiles/TileChest.h"
 #include "../Tiles/TilePath.h"
+
+#include "../Items/Sword.h"
+#include "../Items/Spear.h"
+#include "../Items/Axe.h"
+#include "../Items/PlainNecklace.h"
+#include "../Items/BoneNecklace.h"
+#include "../Items/RingMinor.h"
+#include "../Items/RingMajor.h"
+
+
 #include <string>
 #include <algorithm>
 
@@ -31,6 +41,8 @@ MapManager::MapManager()
 void MapManager::Update()
 {
     this->checkActorCollisions();
+
+    checkForChests();
 
     this->autoTraverse();
 
@@ -261,7 +273,6 @@ void MapManager::generateMap() {
     }
 
 }
-
 
 void MapManager::setTile(Vector2 coordinates, TileType tileType)
 {
@@ -674,5 +685,83 @@ void MapManager::autoTraverse()
         {
             autoTraversing = false;
         }
+    }
+}
+
+void MapManager::checkForChests()
+{
+    if (getTile(player->getPosition())->type == Chest)
+    {
+        int randomNumber = rand() % 3;
+
+        switch (randomNumber)
+        {
+            case 0: // Spawn weapon
+                randomNumber = rand() % 3;
+                if (randomNumber == 0)
+                {
+                    Sword sword(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(sword))
+                    {
+                        items.push_back(sword);
+                    }
+                }
+                else if (randomNumber == 1)
+                {
+                    Spear spear(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(spear))
+                    {
+                        items.push_back(spear);
+                    }
+                }
+                else if (randomNumber == 2)
+                {
+                    Axe axe(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(axe))
+                    {
+                        items.push_back(axe);
+                    }
+                }
+                break;
+            case 1: // Spawn necklace
+                randomNumber = rand() % 2;
+                if (randomNumber == 0)
+                {
+                    PlainNecklace item(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(item))
+                    {
+                        items.push_back(item);
+                    }
+                }
+                else
+                {
+                    BoneNecklace item(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(item))
+                    {
+                        items.push_back(item);
+                    }
+                }
+                break;
+            case 2: // Spawn ring
+                randomNumber = rand() % 2;
+                if (randomNumber == 0)
+                {
+                    RingMinor item(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(item))
+                    {
+                        items.push_back(item);
+                    }
+                }
+                else
+                {
+                    RingMajor item(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(item))
+                    {
+                        items.push_back(item);
+                    }
+                }
+                break;
+        }
+        setTile(player->getPosition(), Traversable);
     }
 }

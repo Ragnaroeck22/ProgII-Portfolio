@@ -28,3 +28,10 @@ enum ItemType
     TypeNecklace,
     TypeRing,
 };
+
+enum SortType
+{
+    Weight,
+    Price,
+    Name,
+};

@@ -17,6 +17,7 @@ public:
     ItemType type;
 
     std::string name;
+    std::string description;
 
     // Attributes
     float weight;

@@ -45,9 +45,7 @@ Player::Player()
     this->blockRight = false;
     this->blockMovement = false;
 
-    this->strength = 2;
-    this->maxCarryWeight = this->strength * 2;
-    this->currentWeight = 0;
+    this->strength = 3;
 
 }
 
@@ -77,7 +75,7 @@ void Player::CustomDraw(Vector2 position)
 
 void Player::handleInput()
 {
-    if ((this->currentWeight <= this->maxCarryWeight))
+    if (!myInventory->getOverencumbered())
     {
         if (IsKeyPressed(KEY_UP) && this->blockUp == false)
         {

@@ -20,4 +20,5 @@ RingMajor::RingMajor(int posX, int posY)
     this->price = 175;
     this->strength = 5;
     this->name = "Ring of major strength";
+    description = "Better than protein powder";
 }

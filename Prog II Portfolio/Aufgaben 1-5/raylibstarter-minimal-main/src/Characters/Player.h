@@ -26,10 +26,6 @@ private:
 
     int strength;
 
-    int maxCarryWeight;
-    int currentWeight;
-
-
     // Methods
 public:
     Player();
