@@ -77,19 +77,19 @@ void Player::handleInput()
 {
     if (!myInventory->getOverencumbered())
     {
-        if (IsKeyPressed(KEY_UP) && this->blockUp == false)
+        if ((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) && this->blockUp == false)
         {
             this->move(Up);
         }
-        else if (IsKeyPressed(KEY_DOWN) && this->blockDown == false)
+        else if ((IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) && this->blockDown == false)
         {
             this->move(Down);
         }
-        else if (IsKeyPressed(KEY_LEFT) && this->blockLeft == false)
+        else if ((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && this->blockLeft == false)
         {
             this->move(Left);
         }
-        else if (IsKeyPressed(KEY_RIGHT) && this->blockRight == false)
+        else if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && this->blockRight == false)
         {
             this->move(Right);
         }

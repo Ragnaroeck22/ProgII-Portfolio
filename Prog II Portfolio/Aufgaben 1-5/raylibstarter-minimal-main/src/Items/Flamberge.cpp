@@ -1,10 +1,10 @@
 //
-// Created by 22max on 23.09.2022.
+// Created by 22max on 28.09.2022.
 //
 
-#include "Spear.h"
+#include "Flamberge.h"
 
-Spear::Spear(int posX, int posY)
+Flamberge::Flamberge(int posX, int posY)
 {
     this->position = {(float) posX, (float) posY};
     Image workingImg = LoadImage("assets/graphics/weapons.png");
@@ -12,11 +12,11 @@ Spear::Spear(int posX, int posY)
     this->texSheet = LoadTextureFromImage(workingImg);
     this->texRec.width = this->texSheet.width / 24;
     this->texRec.height = this->texSheet.height / 20;
-    this->texRec.x = this->texRec.width * 15;
-    this->texRec.y = 0;
+    this->texRec.x = 0;
+    this->texRec.y = texRec.height * 6;
     this->type = TypeWeapon;
-    this->weight = 0.9;
-    this->price = 95;
-    this->name = "Spear";
-    description = "A stick with a\npokey thing";
+    this->weight = 1.4;
+    this->price = 130;
+    this->name = "Flamberge";
+    description = "The most stylish sword\never made";
 }

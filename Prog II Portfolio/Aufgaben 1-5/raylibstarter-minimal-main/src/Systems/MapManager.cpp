@@ -10,6 +10,9 @@
 #include "../Items/Sword.h"
 #include "../Items/Spear.h"
 #include "../Items/Axe.h"
+#include "../Items/Mace.h"
+#include "../Items/Flamberge.h"
+#include "../Items/Warhammer.h"
 #include "../Items/PlainNecklace.h"
 #include "../Items/BoneNecklace.h"
 #include "../Items/RingMinor.h"
@@ -25,13 +28,14 @@ MapManager::MapManager()
     this->texBlocked = LoadTexture("assets/graphics/obstacles.png");
     this->texTraversable = LoadTexture("assets/graphics/paths.png");
 
+    drawItemPickup = false;
+    floorCounter = 0;
+
     this->mapSize.x = 19;
     this->mapSize.y = 19;
     this->tileSize = 50;
     this->generateMap();
     this->calcCost();
-
-    drawItemPickup = false;
 
     this->spawnPlayer();
 
@@ -40,6 +44,8 @@ MapManager::MapManager()
 
 void MapManager::Update()
 {
+    checkWinCondition();
+
     this->checkActorCollisions();
 
     checkForChests();
@@ -94,6 +100,11 @@ void MapManager::Draw()
         position.x = position.x + this->tileSize;
     }
 
+    // Draw floor counter
+    std::string drawFloor = "Floor ";
+    drawFloor.append(std::to_string(floorCounter));
+    DrawText(drawFloor.c_str(), tileSize * 0.1, tileSize * 0.1, tileSize * 0.8, WHITE);
+
     // Draw items
     for (int i = 0; i < items.size(); i++)
     {
@@ -114,6 +125,8 @@ void MapManager::Draw()
 }
 
 void MapManager::generateMap() {
+    floorCounter++;
+
     this->map.clear();
 
     std::vector<std::shared_ptr<Tile>> workingVec;
@@ -330,13 +343,11 @@ std::shared_ptr<Tile> MapManager::getTile(Vector2 coordinates)
 
 void MapManager::spawnPlayer()
 {
-
     this->player = std::make_shared<Player>();
     this->player->setPosition(this->startPos);
     TraceLog(LOG_INFO, "Setting player position:");
     TraceLog(LOG_INFO, std::to_string(this->startPos.x).c_str());
     TraceLog(LOG_INFO, std::to_string(this->startPos.y).c_str());
-
 }
 
 void MapManager::checkActorCollisions() {
@@ -697,8 +708,8 @@ void MapManager::checkForChests()
         switch (randomNumber)
         {
             case 0: // Spawn weapon
-                randomNumber = rand() % 3;
-                if (randomNumber == 0)
+                randomNumber = rand() % 6;
+                if (randomNumber == 0) // Doesn't work with Switch because items have to be instantiated
                 {
                     Sword sword(player->getPosition().x, player->getPosition().y);
                     if (!player->myInventory->addItem(sword))
@@ -720,6 +731,30 @@ void MapManager::checkForChests()
                     if (!player->myInventory->addItem(axe))
                     {
                         items.push_back(axe);
+                    }
+                }
+                else if (randomNumber == 3)
+                {
+                    Mace mace(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(mace))
+                    {
+                        items.push_back(mace);
+                    }
+                }
+                else if (randomNumber == 4)
+                {
+                    Flamberge item(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(item))
+                    {
+                        items.push_back(item);
+                    }
+                }
+                else if (randomNumber == 5)
+                {
+                    Warhammer item(player->getPosition().x, player->getPosition().y);
+                    if (!player->myInventory->addItem(item))
+                    {
+                        items.push_back(item);
                     }
                 }
                 break;
@@ -763,5 +798,27 @@ void MapManager::checkForChests()
                 break;
         }
         setTile(player->getPosition(), Traversable);
+    }
+}
+
+void MapManager::checkWinCondition()
+{
+    if (player->getPosition().x == exitPos.x && player->getPosition().y == exitPos.y)
+    {
+        if (autoTraversing)
+        {
+            autoTraversing = false;
+            player->myInventory->open();
+        }
+        if (!player->myInventory->getOpen()) // Changes map only when player is finished with his inventory (is closed)
+        {
+            this->generateMap();
+            this->calcCost();
+
+            this->player->setPosition(this->startPos);
+            TraceLog(LOG_INFO, "Setting player position:");
+            TraceLog(LOG_INFO, std::to_string(this->startPos.x).c_str());
+            TraceLog(LOG_INFO, std::to_string(this->startPos.y).c_str());
+        }
     }
 }

@@ -19,4 +19,5 @@ Sword::Sword(int posX, int posY)
     this->weight = 1;
     this->price = 100;
     this->name = "Sword";
+    description = "Not great, not terrible";
 }

@@ -21,7 +21,7 @@ private:
 
     // UI
     bool drawItemPickup;
-
+    int floorCounter;
 
     std::vector<std::vector<std::shared_ptr<Tile>>> map;
 
@@ -60,4 +60,7 @@ public:
     void autoTraverse();
 
     bool autoTraversing = false;
+
+    // "Win" condition
+    void checkWinCondition();
 };

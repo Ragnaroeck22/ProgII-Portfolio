@@ -18,5 +18,5 @@ Axe::Axe(int posX, int posY)
     this->weight = 1.5;
     this->price = 70;
     this->name = "Axe";
-    description = "Great for chopping firewood and limbs!";
+    description = "Great for chopping\nfirewood and limbs!";
 }

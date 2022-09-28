@@ -19,5 +19,5 @@ RingMinor::RingMinor(int posX, int posY)
     this->price = 125;
     this->strength = 2;
     this->name = "Ring of minor strength";
-    description = "Grants you the strength of ten really puny men";
+    description = "Grants you the strength\nof ten really puny men";
 }

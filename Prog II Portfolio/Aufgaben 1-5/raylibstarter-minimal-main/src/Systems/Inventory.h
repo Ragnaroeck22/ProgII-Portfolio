@@ -7,6 +7,16 @@
 #include "../Items/Weapon.h"
 #include "../Items/Ring.h"
 #include "../Items/Necklace.h"
+#include "../Items/Sword.h"
+#include "../Items/Spear.h"
+#include "../Items/Axe.h"
+#include "../Items/Mace.h"
+#include "../Items/Flamberge.h"
+#include "../Items/Warhammer.h"
+#include "../Items/PlainNecklace.h"
+#include "../Items/BoneNecklace.h"
+#include "../Items/RingMinor.h"
+#include "../Items/RingMajor.h"
 #include "raylib.h"
 
 template<class TempItem>
@@ -205,6 +215,11 @@ public:
             if (IsKeyPressed(KEY_Y))
                 sortInv(Name, false);
 
+            if (IsKeyPressed(KEY_U))
+            {
+                createDemoInv();
+            }
+
             getSlotHover();
 
             // Item buttons
@@ -297,24 +312,26 @@ public:
         switch (sortType)
         {
             case Weight:
+                TraceLog(LOG_INFO, "Sorting for weight");
                 if (ascending)
                 {
-                    for (int i = 0; i < inventory.size(); i++)
+                    TraceLog(LOG_INFO, "Ascending");
+                    for (int i = 0; i < inventory.size() - 1; i++)
                     {
-                        for (int j = i; j < inventory.size(); j++)
+                        for (int j = 0; j < (inventory.size() - i - 1); j++)
                         {
-                            if (inventory[j].weight < inventory[j - 1].weight)
+                            if (inventory[j].weight > inventory[j + 1].weight)
                             {
                                 sortHelper = inventory[j];
-                                inventory[j] = inventory[j - 1];
-                                inventory[j - 1] = sortHelper;
+                                inventory[j] = inventory[j + 1];
+                                inventory[j + 1] = sortHelper;
                             }
                         }
                     }
                 }
                 else
                 {
-
+                    TraceLog(LOG_INFO, "Descending");
                     int flag = 1;
                     for (int i = 1; (i <= inventory.size()) && flag; i++)
                     {
@@ -333,24 +350,26 @@ public:
                 }
                 break;
             case Price:
+                TraceLog(LOG_INFO, "Sorting for price");
                 if (ascending)
                 {
-                    for (int i = 0; i < inventory.size(); i++)
+                    TraceLog(LOG_INFO, "Ascending");
+                    for (int i = 0; i < inventory.size() - 1; i++)
                     {
-                        for (int j = i; j < inventory.size(); j++)
+                        for (int j = 0; j < (inventory.size() - i - 1); j++)
                         {
-                            if (inventory[j].price < inventory[j - 1].price)
+                            if (inventory[j].price > inventory[j + 1].price)
                             {
                                 sortHelper = inventory[j];
-                                inventory[j] = inventory[j - 1];
-                                inventory[j - 1] = sortHelper;
+                                inventory[j] = inventory[j + 1];
+                                inventory[j + 1] = sortHelper;
                             }
                         }
                     }
                 }
                 else
                 {
-
+                    TraceLog(LOG_INFO, "Descending");
                     int flag = 1;
                     for (int i = 1; (i <= inventory.size()) && flag; i++)
                     {
@@ -369,24 +388,26 @@ public:
                 }
                 break;
             case Name:
+                TraceLog(LOG_INFO, "Sorting for name");
                 if (ascending)
                 {
-                    for (int i = 0; i < inventory.size(); i++)
+                    TraceLog(LOG_INFO, "Ascending");
+                    for (int i = 0; i < inventory.size() - 1; i++)
                     {
-                        for (int j = i; j < inventory.size(); j++)
+                        for (int j = 0; j < (inventory.size() - i - 1); j++)
                         {
-                            if (inventory[j].name < inventory[j - 1].name)
+                            if (inventory[j].name > inventory[j + 1].name)
                             {
                                 sortHelper = inventory[j];
-                                inventory[j] = inventory[j - 1];
-                                inventory[j - 1] = sortHelper;
+                                inventory[j] = inventory[j + 1];
+                                inventory[j + 1] = sortHelper;
                             }
                         }
                     }
                 }
                 else
                 {
-
+                    TraceLog(LOG_INFO, "Descending");
                     int flag = 1;
                     for (int i = 1; (i <= inventory.size()) && flag; i++)
                     {
@@ -524,11 +545,41 @@ public:
             DrawRectangle(slotNecklaceRec.x, slotNecklaceRec.y, slotNecklaceRec.width, slotNecklaceRec.height, BLACK);
             DrawRectangle(slotRingRec.x, slotRingRec.y, slotRingRec.width, slotRingRec.height, BLACK);
 
+            // Draw carry weight
+            Color outputColor = WHITE;
+            std::string outputString = "Carry weight: ";
+            outputString.append(std::to_string(getCurrentWeight()));
+            outputString.append(" / ");
+            outputString.append(std::to_string(maxWeight));
+            if (getCurrentWeight() > maxWeight)
+            {
+                outputColor = RED;
+            }
+            DrawText(outputString.c_str(), panel.x + panel.width - (MeasureText(outputString.c_str(), 30) * 1.05),
+                     panel.y + panel.height - panel.height / 20, 30, outputColor);
+
+
             // Draw hover
             if (slotIsHovered)
             {
                 DrawRectangleLines(itemSlotRecs[hoveredSlot].x, itemSlotRecs[hoveredSlot].y,
                                    itemSlotRecs[hoveredSlot].width, itemSlotRecs[hoveredSlot].height, YELLOW);
+
+                if (hoveredSlot < inventory.size())
+                {
+                    // Draw tooltip
+                    std::string tooltip = "Name: ";
+                    tooltip.append(getSlot(hoveredSlot).name);
+                    tooltip.append("\nPrice: ");
+                    tooltip.append(std::to_string(getSlot(hoveredSlot).price));
+                    tooltip.append("$\nWeight: ");
+                    tooltip.append(std::to_string(getSlot(hoveredSlot).weight));
+                    tooltip.append("\n\nDesc: ");
+                    tooltip.append(getSlot(hoveredSlot).description);
+
+                    DrawText(tooltip.c_str(), GetMousePosition().x + panel.width * 0.05, GetMousePosition().y, 25,
+                             WHITE);
+                }
             }
             else if (bigSlotHovered)
             {
@@ -537,12 +588,57 @@ public:
                 {
                     case TypeWeapon:
                         posY = slotWeaponRec.y;
+                        if (!slotWeapon.empty())
+                        {
+                            // Draw tooltip
+                            std::string tooltip = "Name: ";
+                            tooltip.append(slotWeapon[0].name);
+                            tooltip.append("\nPrice: ");
+                            tooltip.append(std::to_string(slotWeapon[0].price));
+                            tooltip.append("$\nWeight: ");
+                            tooltip.append(std::to_string(slotWeapon[0].weight));
+                            tooltip.append("\n\nDesc: ");
+                            tooltip.append(slotWeapon[0].description);
+
+                            DrawText(tooltip.c_str(), GetMousePosition().x + panel.width * 0.05, GetMousePosition().y, 25,
+                                     WHITE);
+                        }
                         break;
                     case TypeNecklace:
                         posY = slotNecklaceRec.y;
+                        if (!slotNecklace.empty())
+                        {
+                            // Draw tooltip
+                            std::string tooltip = "Name: ";
+                            tooltip.append(slotNecklace[0].name);
+                            tooltip.append("\nPrice: ");
+                            tooltip.append(std::to_string(slotNecklace[0].price));
+                            tooltip.append("$\nWeight: ");
+                            tooltip.append(std::to_string(slotNecklace[0].weight));
+                            tooltip.append("\n\nDesc: ");
+                            tooltip.append(slotNecklace[0].description);
+
+                            DrawText(tooltip.c_str(), GetMousePosition().x + panel.width * 0.05, GetMousePosition().y, 25,
+                                     WHITE);
+                        }
                         break;
                     case TypeRing:
                         posY = slotRingRec.y;
+                        if (!slotRing.empty())
+                        {
+                            // Draw tooltip
+                            std::string tooltip = "Name: ";
+                            tooltip.append(slotRing[0].name);
+                            tooltip.append("\nPrice: ");
+                            tooltip.append(std::to_string(slotRing[0].price));
+                            tooltip.append("$\nWeight: ");
+                            tooltip.append(std::to_string(slotRing[0].weight));
+                            tooltip.append("\n\nDesc: ");
+                            tooltip.append(slotRing[0].description);
+
+                            DrawText(tooltip.c_str(), GetMousePosition().x + panel.width * 0.05, GetMousePosition().y, 25,
+                                     WHITE);
+                        }
                         break;
                 }
                 DrawRectangleLines(slotWeaponRec.x, posY,
@@ -676,19 +772,6 @@ public:
                                itemFontSize, itemFontSpacing, WHITE);
                 }
             }
-
-            // Draw carry weight
-            Color outputColor = WHITE;
-            std::string outputString = "Carry weight: ";
-            outputString.append(std::to_string(getCurrentWeight()));
-            outputString.append(" / ");
-            outputString.append(std::to_string(maxWeight));
-            if (getCurrentWeight() > maxWeight)
-            {
-                outputColor = RED;
-            }
-            DrawText(outputString.c_str(), panel.x + panel.width - (MeasureText(outputString.c_str(), 30) * 1.05),
-                     panel.y + panel.height - panel.height / 20, 30, outputColor);
         }
     };
 
@@ -697,11 +780,6 @@ public:
         if (slot < this->inventory.size() && slot >= 0)
         {
             return inventory[slot];
-        }
-        else
-        {
-            TraceLog(LOG_INFO, "Error: Requested slot out of bounds (Inventory::getSlot() )");
-            return NULL;
         }
     };
 
@@ -868,11 +946,41 @@ public:
         calcWeight();
     }
 
+    void createDemoInv() // Warning: removes all current items
+    {
+        inventory.clear();
+        Sword sword(0, 0);
+        inventory.push_back(sword);
+        Spear spear(0,0);
+        inventory.push_back(spear);
+        Axe axe(0, 0);
+        inventory.push_back(axe);
+        Mace mace(0, 0);
+        inventory.push_back(mace);
+        Flamberge flamberge(0, 0);
+        inventory.push_back(flamberge);
+        Warhammer warhammer(0, 0);
+        inventory.push_back(warhammer);
+
+        PlainNecklace plainNecklace (0, 0);
+        inventory.push_back(plainNecklace);
+        BoneNecklace boneNecklace (0, 0);
+        inventory.push_back(boneNecklace);
+        RingMinor ringMinor (0, 0);
+        inventory.push_back(ringMinor);
+        RingMajor ringMajor (0, 0);
+        inventory.push_back(ringMajor);
+    }
 
     // GUI
     void open()
     {
         this->isOpen = true;
+    }
+
+    bool getOpen()
+    {
+        return isOpen;
     }
 
 };
