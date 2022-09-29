@@ -15,6 +15,7 @@
 Player::Player()
 {
     this->myInventory = std::make_shared<Inventory<ItemBase>>(10);
+    myInventory->setBaseStrength(strength);
 
     this->texture = LoadTexture("assets/graphics/obstacles.png");
     this->textureRec.width = this->texture.width / 16;

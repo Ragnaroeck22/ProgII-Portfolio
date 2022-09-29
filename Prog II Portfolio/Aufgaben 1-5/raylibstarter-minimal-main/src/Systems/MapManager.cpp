@@ -457,7 +457,7 @@ Vector2 MapManager::getTileCoords(std::shared_ptr<Tile> tile)
 
 void MapManager::calcCost()
 {
-
+    resetPath();
     std::shared_ptr<Tile> currentTile = getTile(player->getPosition());
     currentTile->fLocalGoal = 0;
     currentTile->fGlobalGoal = calcCostH(currentTile);
@@ -510,276 +510,6 @@ void MapManager::calcCost()
             }
         }
     }
-
-
-
-/*
-    std::vector<std::shared_ptr<Tile>> vecOpen; //the set of nodes to be evaluated
-    std::vector<std::shared_ptr<Tile>> vecClosed; //the set of nodes already evaluated
-    vecOpen.push_back(start); //add the start node to OPEN
-
-    bool pathFound = false;
-
-    while (!pathFound)
-    {
-        std::shared_ptr<Tile> currentTile = vecOpen[0]; //current = node in OPEN with the lowest f_cost
-        for (int i = 0; i < vecOpen.size(); i++)
-        {
-            if (currentTile->getCostF() < vecOpen[i]->getCostF())
-            {
-                currentTile = vecOpen[i];
-            }
-        }
-
-        for (int i = 0; i < vecOpen.size(); i++) //remove current from OPEN
-        {
-            if (vecOpen[i] == currentTile)
-            {
-                vecOpen.erase(vecOpen.cbegin() + i);
-            }
-        }
-        vecClosed.push_back(currentTile); //add current to CLOSED
-
-        if (currentTile == exit) //if current is the target node //path has been found
-        {
-            pathFound = true;
-            return;
-        }
-
-        std::vector<std::shared_ptr<Tile>> neighbors = getNeighbors(getTileCoords(currentTile));
-
-        for (int i = 0; i < neighbors.size(); i++)//    foreach neighbour of the current node
-        {
-            bool inClosed = false;
-            for (int j = 0; j < vecClosed.size(); j++)
-            {
-                if (neighbors[i] == vecClosed[i])
-                {
-                    inClosed = true;
-                }
-            }
-            if (neighbors[i]->type == Blocked || inClosed == true)//if neighbour is not traversable or neighbour is in CLOSED
-            {
-                //skip to the next neighbour (do nothing)
-            }
-            else
-            {
-                // Check if path is shorter (less parents)
-                //int newPathLength = currentTile->calcPathLength() + 1;
-
-                bool inOpen = false;
-                for (int j = 0; j < vecOpen.size(); j++)
-                {
-                    if (neighbors[i] == vecOpen[i])
-                    {
-                        inOpen = true;
-                    }
-                }
-                // newPathLength < neighbors[i]->calcPathLength() ||
-                if (!inOpen)//if new path to neighbour is shorter OR neighbour is not in OPEN
-                {
-                    TraceLog(LOG_INFO, "=====================================");
-                    calcCostG(neighbors[i]);
-                    calcCostH(neighbors[i]);
-                    neighbors[i]->parentTile = currentTile;//set parent of neighbour to current
-                    if (!inOpen)//if neighbour is not in OPEN
-                    {
-                        vecOpen.push_back(neighbors[i]);// add neighbor to open
-                    }
-                }
-            }
-        }
-}
-
-
-*/
-
-
-
-/*
-    std::vector<std::shared_ptr<Tile>> vecOpen;
-
-    //Set up the start tile
-    start->costG = 0;
-    start->costH = calcCostH(start);
-
-    vecOpen.push_back(start);
-
-    //Begin the loop
-    bool pathFound = false;
-    std::shared_ptr<Tile> currentTile = nullptr;
-
-    while (!pathFound)
-    {
-        //Choose the most suitable tile to visit
-        if (!vecOpen.empty()) {
-            //Sort the vector, tile with the lowest cost is at the end
-            for (int i = 0; i < vecOpen.size() - 1; i++)
-                for (int j = 0; j < vecOpen.size() - i - 1; j++)
-                    if (vecOpen[j]->getCostF() < vecOpen[j + 1]->getCostF())
-                    {
-                        // Swap cells
-                        std::shared_ptr<Tile> helper = vecOpen[j];
-                        vecOpen[j] = vecOpen[j + 1];
-                        vecOpen[j + 1] = helper;
-                    }
-
-            currentTile = vecOpen[vecOpen.size() - 1];
-        }
-        else
-        {
-            //Out of open tiles, path not found
-            break;
-        }
-        //Remove the pointer to the current tile from the openTiles vector, as I'm about to visit the tile
-        vecOpen.pop_back();
-
-        //Set the current tile as visited
-        currentTile->wasVisited = true;
-
-        //Analyze neighbours
-        std::vector<std::shared_ptr<Tile>> neighbours = getNeighbors(getTileCoords(currentTile));
-        for (int i = 0; i < neighbours.size(); i++)
-        {
-            //If the neighbour tile was already checked, skip it.
-            //If the unit cannot move through the neighbour tile, also skip it.
-
-            if (!neighbours[i]->wasVisited && neighbours[i]->type != Blocked) {
-
-                //This can happen multiple times per tile
-
-                //Set G value
-
-*/
-                /*
-                I first need to check if the neighbour tile is diagonal or not.
-                If it's diagonal, I would add 14 to the current G, otherwise 10.
-                I only change the G value if the new value would be smaller than
-                the current one.
-                */
-/*
-                if (currentTile->costG + 1 < neighbours[i]->costG) {
-                    neighbours[i]->costG = currentTile->costG + 1;
-
-                    //Set the parent
-                    //Only if the new G is smaller than the previous G
-                    neighbours[i]->parentTile = currentTile;
-
-                }
-
-                //This can only happen once per tile
-                if (neighbours[i]->costH == 999) {
-                    //Set H value
-                    int h = calcCostH(neighbours[i]);
-                    neighbours[i]->costH = h;
-
-                    if (h == 0)
-                    {
-                        pathFound = true;
-                    }
-
-                    //Add this tile to the vector of open tiles
-                    vecOpen.push_back(neighbours[i]);
-                }
-            }
-        }
-
-    }
-
-*/
-
-
-
-
-/*
-    std::vector<std::shared_ptr<Tile>> vecOpen;
-    std::vector<std::shared_ptr<Tile>> vecClosed;
-
-    this->start->costG = 0;
-    vecOpen.push_back(this->start);
-
-    while(true)
-    {
-        std::shared_ptr<Tile> currentTile = vecOpen[0];
-
-        for (int i = 0; i < vecOpen.size(); i++)
-        {
-            calcCostG(vecOpen[i]);
-            calcCostH(vecOpen[i]);
-
-            if (vecOpen[i]->getCostF() > currentTile->getCostF())
-            {
-                // Remove current cell from vecOpen
-                for (int i = 0; i < vecOpen.size(); i++)
-                {
-                    if (vecOpen[i] == currentTile)
-                        vecOpen.erase(vecOpen.cbegin() + i);
-                }
-                vecClosed.push_back(currentTile);
-
-                if (currentTile == this->exit)
-                {
-                    return;
-                }
-
-                // Check neighbors of current tile
-                std::vector<std::shared_ptr<Tile>> tilesToCheck = getNeighbors(getTileCoords(currentTile));
-                for (int i = 0; i < tilesToCheck.size(); i++)
-                {
-                    // Check if neighbor is in vecClosed
-                    bool inClosedVec = false;
-                    for (int j = 0; j < vecClosed.size(); j++)
-                    {
-                        if (tilesToCheck[i] == vecClosed[j])
-                            inClosedVec = true;
-                    }
-                    if (!inClosedVec && tilesToCheck[i]->type != Blocked)
-                    {
-                        bool inOpenVec = false;
-                        for (int j = 0; j < vecClosed.size(); j++)
-                        {
-                            if (tilesToCheck[i] == vecClosed[j])
-                                inOpenVec = true;
-                        }
-                        if (currentTile->costG + 1 < tilesToCheck[i]->costG || !inOpenVec)
-                        {
-                            tilesToCheck[i]->costG = currentTile->costG + 1;
-                            tilesToCheck[i]->parentTile = currentTile;
-                            if (!inOpenVec)
-                            {
-                                vecOpen.push_back(tilesToCheck[i]);
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-    */
-}
-
-int MapManager::calcCostG(std::shared_ptr<Tile> tile)
-{
-
-    return tile->parentTile->costG + 1;
-    /*
-    Vector2 position = getTileCoords(tile);
-
-    int diffX;
-    int diffY;
-    if (position.x <= startPos.x)
-        diffX = startPos.x - position.x;
-    else
-        diffX = position.x - startPos.x;
-
-    if (position.y <= startPos.y)
-        diffY = startPos.y - position.y;
-    else
-        diffY = position.y - startPos.y;
-
-    return diffX + diffY;
-     */
 }
 
 int MapManager::calcCostH(std::shared_ptr<Tile> tile)
@@ -802,60 +532,50 @@ int MapManager::calcCostH(std::shared_ptr<Tile> tile)
 }
 
 void MapManager::autoTraverse() {
-    if (IsKeyPressed(KEY_K)) {
-        calcCost();
-        std::shared_ptr<Tile> tileToTest = exit;
-        path.clear();
-        while (tileToTest != nullptr)
-        {
-            path.push_back(tileToTest);
-            tileToTest->drawPathIndicator = true;
-            tileToTest = tileToTest->parentTile;
-        }
-        autoTraversing = true;
-    }
 
-    if (autoTraversing)
-    {
-        // if (player->getPosition() != exitPos) doesn't work for some reason
-        if (player->getPosition().x != exitPos.x || player->getPosition().y != exitPos.y)
-        {
-            Vector2 targetPos = getTileCoords(path.back());
-            if (targetPos.x != player->getPosition().x || targetPos.y != player->getPosition().y)
-            {
+    if (!player->myInventory->getOverencumbered()) {
 
-                int diffX = player->getPosition().x - targetPos.x;
-                int diffY = player->getPosition().y - targetPos.y;
-
-
-                if (diffX > 0)
-                {
-                    player->move(Left);
-                }
-                else if (diffX < 0)
-                {
-                    player->move(Right);
-                }
-                else if (diffY > 0)
-                {
-                    player->move(Up);
-                }
-                else if (diffY < 0)
-                {
-                    player->move(Down);
-                }
-
+        if (IsKeyPressed(KEY_K)) {
+            calcCost();
+            std::shared_ptr<Tile> tileToTest = exit;
+            path.clear();
+            while (tileToTest != nullptr) {
+                path.push_back(tileToTest);
+                tileToTest->drawPathIndicator = true;
+                tileToTest = tileToTest->parentTile;
             }
-            if (!path.empty())
-            {
-                path.pop_back();
-            }
+            autoTraversing = true;
         }
 
-    }
-    else
-    {
-        autoTraversing = false;
+        if (autoTraversing) {
+            // if (player->getPosition() != exitPos) doesn't work for some reason
+            if (player->getPosition().x != exitPos.x || player->getPosition().y != exitPos.y) {
+                Vector2 targetPos = getTileCoords(path.back());
+                if (targetPos.x != player->getPosition().x || targetPos.y != player->getPosition().y) {
+
+                    int diffX = player->getPosition().x - targetPos.x;
+                    int diffY = player->getPosition().y - targetPos.y;
+
+
+                    if (diffX > 0) {
+                        player->move(Left);
+                    } else if (diffX < 0) {
+                        player->move(Right);
+                    } else if (diffY > 0) {
+                        player->move(Up);
+                    } else if (diffY < 0) {
+                        player->move(Down);
+                    }
+
+                }
+                if (!path.empty()) {
+                    path.pop_back();
+                }
+            }
+
+        } else {
+            autoTraversing = false;
+        }
     }
 }
 
@@ -873,7 +593,11 @@ void MapManager::checkForChests()
                 if (randomNumber == 0) // Doesn't work with Switch because items have to be instantiated
                 {
                     Sword sword(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(sword))
+                    if (player->myInventory->getCurrentWeight() + sword.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(sword);
+                    }
+                    else if (!player->myInventory->addItem(sword))
                     {
                         items.push_back(sword);
                     }
@@ -881,7 +605,11 @@ void MapManager::checkForChests()
                 else if (randomNumber == 1)
                 {
                     Spear spear(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(spear))
+                    if (player->myInventory->getCurrentWeight() + spear.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(spear);
+                    }
+                    else if (!player->myInventory->addItem(spear))
                     {
                         items.push_back(spear);
                     }
@@ -889,7 +617,11 @@ void MapManager::checkForChests()
                 else if (randomNumber == 2)
                 {
                     Axe axe(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(axe))
+                    if (player->myInventory->getCurrentWeight() + axe.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(axe);
+                    }
+                    else if (!player->myInventory->addItem(axe))
                     {
                         items.push_back(axe);
                     }
@@ -897,7 +629,11 @@ void MapManager::checkForChests()
                 else if (randomNumber == 3)
                 {
                     Mace mace(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(mace))
+                    if (player->myInventory->getCurrentWeight() + mace.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(mace);
+                    }
+                    else if (!player->myInventory->addItem(mace))
                     {
                         items.push_back(mace);
                     }
@@ -905,7 +641,11 @@ void MapManager::checkForChests()
                 else if (randomNumber == 4)
                 {
                     Flamberge item(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(item))
+                    if (player->myInventory->getCurrentWeight() + item.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(item);
+                    }
+                    else if (!player->myInventory->addItem(item))
                     {
                         items.push_back(item);
                     }
@@ -913,7 +653,11 @@ void MapManager::checkForChests()
                 else if (randomNumber == 5)
                 {
                     Warhammer item(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(item))
+                    if (player->myInventory->getCurrentWeight() + item.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(item);
+                    }
+                    else if (!player->myInventory->addItem(item))
                     {
                         items.push_back(item);
                     }
@@ -924,7 +668,11 @@ void MapManager::checkForChests()
                 if (randomNumber == 0)
                 {
                     PlainNecklace item(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(item))
+                    if (player->myInventory->getCurrentWeight() + item.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(item);
+                    }
+                    else if (!player->myInventory->addItem(item))
                     {
                         items.push_back(item);
                     }
@@ -932,7 +680,11 @@ void MapManager::checkForChests()
                 else
                 {
                     BoneNecklace item(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(item))
+                    if (player->myInventory->getCurrentWeight() + item.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(item);
+                    }
+                    else if (!player->myInventory->addItem(item))
                     {
                         items.push_back(item);
                     }
@@ -943,7 +695,11 @@ void MapManager::checkForChests()
                 if (randomNumber == 0)
                 {
                     RingMinor item(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(item))
+                    if (player->myInventory->getCurrentWeight() + item.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(item);
+                    }
+                    else if (!player->myInventory->addItem(item))
                     {
                         items.push_back(item);
                     }
@@ -951,7 +707,11 @@ void MapManager::checkForChests()
                 else
                 {
                     RingMajor item(player->getPosition().x, player->getPosition().y);
-                    if (!player->myInventory->addItem(item))
+                    if (player->myInventory->getCurrentWeight() + item.weight > player->myInventory->getMaxWeight())
+                    {
+                        items.push_back(item);
+                    }
+                    else if (!player->myInventory->addItem(item))
                     {
                         items.push_back(item);
                     }
@@ -961,6 +721,23 @@ void MapManager::checkForChests()
         setTile(player->getPosition(), Traversable);
     }
 }
+
+
+void MapManager::resetPath()
+{
+    for (int i = 0; i < this->mapSize.x; i++)
+    {
+        for (int j = 0; j < this->mapSize.y; j++)
+        {
+            this->map[i][j]->fGlobalGoal = 999;
+            this->map[i][j]->fLocalGoal = 999;
+            this->map[i][j]->drawPathIndicator = false;
+            this->map[i][j]->parentTile = nullptr;
+            this->map[i][j]->wasVisited = false;
+        }
+    }
+}
+
 
 void MapManager::checkWinCondition()
 {

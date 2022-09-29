@@ -1,0 +1,16 @@
+
+===== ASSETS =====
+Tiles:
+https://jamiebrownhill.itch.io/solaria-rural-village
+
+Waffen:
+https://opengameart.org/content/16x16-weapon-rpg-icons
+
+Schmuck:
+https://opengameart.org/content/rings-and-necklaces-from-pixeltime-videos
+
+
+===== CODE =====
+
+A*-Algorithmus adaptiert von:
+https://www.youtube.com/watch?v=icZj67PTFhc&ab_channel=javidx9

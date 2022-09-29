@@ -34,6 +34,8 @@ private:
     Vector2 startPos;
     Vector2 exitPos;
 
+    bool autoTraversing = false;
+    
     // Methods
 public:
     MapManager();
@@ -56,11 +58,11 @@ public:
     std::vector<std::shared_ptr<Tile>> path;
     Vector2 getTileCoords(std::shared_ptr<Tile> tile);
     void calcCost();
-    int calcCostG(std::shared_ptr<Tile> tile);
     int calcCostH(std::shared_ptr<Tile> tile);
     void autoTraverse();
+    void resetPath();
 
-    bool autoTraversing = false;
+
 
     // "Win" condition
     void checkWinCondition();

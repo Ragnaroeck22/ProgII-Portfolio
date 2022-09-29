@@ -83,6 +83,7 @@ private:
     float currentWeight;
     float maxWeight;
     bool overencumbered;
+    float baseStrength;
 
     // Methods
 public:
@@ -90,6 +91,8 @@ public:
     {
         this->slotCount = slots;
         isOpen = false;
+
+        baseStrength = 0;
 
         panel.x = GetScreenWidth() * 0.1;
         panel.y = GetScreenHeight() * 0.1;
@@ -454,7 +457,7 @@ public:
         return strength;
     }
 
-    void calcWeight()
+    void calcWeight() // Update currentWeight, maxWeight and overencumbered status
     {
         overencumbered = false;
         currentWeight = getCurrentWeight();
@@ -463,6 +466,11 @@ public:
         {
             overencumbered = true;
         }
+    }
+
+    float getMaxWeight()
+    {
+        return maxWeight;
     }
 
     bool getOverencumbered()
@@ -901,6 +909,7 @@ public:
                     if (addItem(slotWeapon[0])) // Returns true if adding the item was successful
                     {
                         slotWeapon.erase(slotWeapon.cbegin());
+                        calcWeight();
                         return true;
                     }
                     else
@@ -915,6 +924,7 @@ public:
                     if (addItem(slotNecklace[0])) // Returns true if adding the item was successful
                     {
                         slotNecklace.erase(slotNecklace.cbegin());
+                        calcWeight();
                         return true;
                     }
                     else
@@ -929,6 +939,7 @@ public:
                     if (addItem(slotRing[0])) // Returns true if adding the item was successful
                     {
                         slotRing.erase(slotRing.cbegin());
+                        calcWeight();
                         return true;
                     }
                     else
@@ -937,7 +948,6 @@ public:
                     }
                 }
         }
-        calcWeight();
     }
 
     void createDemoInv() // Warning: removes all current items
@@ -980,6 +990,11 @@ public:
     int getCurrentSize()
     {
         return inventory.size();
+    }
+
+    void setBaseStrength(float strength)
+    {
+        baseStrength = strength;
     }
 
 };
