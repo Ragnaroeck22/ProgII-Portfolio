@@ -15,10 +15,14 @@ public:
     // For A* algorithm
     int costG = 999;
     int costH = 999;
-    int costF = 1998;
-    //std::vector<std::shared_ptr<Tile>> neighbors;
+
+    int fGlobalGoal = 999;
+    int fLocalGoal = 999;
+
+    std::vector<std::shared_ptr<Tile>> neighbors;
     std::shared_ptr<Tile> parentTile = nullptr;
     bool wasVisited = false;
+    bool drawPathIndicator = false;
     Vector2 position; // Coordinates, only really used for pathfinding
 
 protected:

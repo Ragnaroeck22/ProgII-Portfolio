@@ -18,6 +18,7 @@ TileStart::TileStart(Texture2D texture, Texture2D texBackground)
     this->texRec.height = this->texSheet.height / 16;
     this->texRec.x = this->texRec.width * 2;
     this->texRec.y = this->texRec.height * 9;
+
 }
 
 void TileStart::CustomDraw(Vector2 position)

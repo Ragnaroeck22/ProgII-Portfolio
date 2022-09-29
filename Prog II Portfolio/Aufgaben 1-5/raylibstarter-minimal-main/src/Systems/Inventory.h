@@ -156,6 +156,7 @@ public:
             helperRec.x = helperRec.x - panel.width / 10;
         }
 
+        //SetTextureFilter(weaponSheetLarge, TEXTURE_FILTER_POINT);
     };
 
     // ======== UPDATE-FUNCTIONS ========
@@ -974,6 +975,11 @@ public:
     bool getOpen()
     {
         return isOpen;
+    }
+
+    int getCurrentSize()
+    {
+        return inventory.size();
     }
 
 };

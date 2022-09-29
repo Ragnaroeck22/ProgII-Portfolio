@@ -53,6 +53,7 @@ public:
 
     // For A* algorithm
     std::vector<std::shared_ptr<Tile>> getNeighbors(Vector2 coordinates);
+    std::vector<std::shared_ptr<Tile>> path;
     Vector2 getTileCoords(std::shared_ptr<Tile> tile);
     void calcCost();
     int calcCostG(std::shared_ptr<Tile> tile);

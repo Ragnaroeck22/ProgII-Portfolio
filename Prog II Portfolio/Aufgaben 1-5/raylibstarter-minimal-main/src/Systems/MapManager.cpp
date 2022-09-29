@@ -35,9 +35,10 @@ MapManager::MapManager()
     this->mapSize.y = 19;
     this->tileSize = 50;
     this->generateMap();
-    this->calcCost();
 
     this->spawnPlayer();
+
+    //this->calcCost();
 
     this->actors.push_back(this->player);
 }
@@ -126,6 +127,7 @@ void MapManager::Draw()
 
 void MapManager::generateMap() {
     floorCounter++;
+    path.clear();
 
     this->map.clear();
 
@@ -456,10 +458,61 @@ Vector2 MapManager::getTileCoords(std::shared_ptr<Tile> tile)
 void MapManager::calcCost()
 {
 
+    std::shared_ptr<Tile> currentTile = getTile(player->getPosition());
+    currentTile->fLocalGoal = 0;
+    currentTile->fGlobalGoal = calcCostH(currentTile);
+
+    std::vector<std::shared_ptr<Tile>> notTestedTiles;
+    notTestedTiles.push_back(currentTile);
+
+
+    while (!notTestedTiles.empty())
+    {
+        TraceLog(LOG_INFO, "Sorting vec (ascending)");
+        for (int i = 0; i < notTestedTiles.size() - 1; i++)
+        {
+            for (int j = 0; j < (notTestedTiles.size() - i - 1); j++)
+            {
+                if (notTestedTiles[j]->fGlobalGoal > notTestedTiles[j + 1]->fGlobalGoal)
+                {
+                    std::shared_ptr<Tile> sortHelper = notTestedTiles[j];
+                    notTestedTiles[j] = notTestedTiles[j + 1];
+                    notTestedTiles[j + 1] = sortHelper;
+                }
+            }
+        }
+
+        while (!notTestedTiles.empty() && notTestedTiles.front()->wasVisited)
+            notTestedTiles.erase(notTestedTiles.cbegin());
+
+
+        if (notTestedTiles.empty())
+            break;
+
+        currentTile = notTestedTiles.front();
+        currentTile->wasVisited = true;
+
+        currentTile->neighbors = getNeighbors(getTileCoords(currentTile));
+
+        for (auto tileNeighbor : currentTile->neighbors)
+        {
+            if (!tileNeighbor->wasVisited && tileNeighbor->type != Blocked)
+                notTestedTiles.push_back(tileNeighbor);
+
+            float fPossiblyLowerGoal = currentTile->fLocalGoal + 1;
+
+            if (fPossiblyLowerGoal < tileNeighbor->fLocalGoal)
+            {
+                tileNeighbor->parentTile = currentTile;
+                tileNeighbor->fLocalGoal = fPossiblyLowerGoal;
+
+                tileNeighbor->fGlobalGoal = tileNeighbor->fLocalGoal + calcCostH(tileNeighbor);
+            }
+        }
+    }
 
 
 
-    
 /*
     std::vector<std::shared_ptr<Tile>> vecOpen; //the set of nodes to be evaluated
     std::vector<std::shared_ptr<Tile>> vecClosed; //the set of nodes already evaluated
@@ -632,8 +685,8 @@ void MapManager::calcCost()
         }
 
     }
-*/
 
+*/
 
 
 
@@ -708,6 +761,9 @@ void MapManager::calcCost()
 
 int MapManager::calcCostG(std::shared_ptr<Tile> tile)
 {
+
+    return tile->parentTile->costG + 1;
+    /*
     Vector2 position = getTileCoords(tile);
 
     int diffX;
@@ -723,6 +779,7 @@ int MapManager::calcCostG(std::shared_ptr<Tile> tile)
         diffY = position.y - startPos.y;
 
     return diffX + diffY;
+     */
 }
 
 int MapManager::calcCostH(std::shared_ptr<Tile> tile)
@@ -744,10 +801,17 @@ int MapManager::calcCostH(std::shared_ptr<Tile> tile)
     return diffX + diffY;
 }
 
-void MapManager::autoTraverse()
-{
-    if (IsKeyPressed(KEY_K))
-    {
+void MapManager::autoTraverse() {
+    if (IsKeyPressed(KEY_K)) {
+        calcCost();
+        std::shared_ptr<Tile> tileToTest = exit;
+        path.clear();
+        while (tileToTest != nullptr)
+        {
+            path.push_back(tileToTest);
+            tileToTest->drawPathIndicator = true;
+            tileToTest = tileToTest->parentTile;
+        }
         autoTraversing = true;
     }
 
@@ -756,38 +820,45 @@ void MapManager::autoTraverse()
         // if (player->getPosition() != exitPos) doesn't work for some reason
         if (player->getPosition().x != exitPos.x || player->getPosition().y != exitPos.y)
         {
-            std::shared_ptr<Tile> currentTile = getTile(player->getPosition());
-            std::vector<std::shared_ptr<Tile>> neighbors = getNeighbors(player->getPosition());
-
-            std::shared_ptr<Tile> moveTo = neighbors[0];
-            for (int i = 0; i < neighbors.size(); i++)
+            Vector2 targetPos = getTileCoords(path.back());
+            if (targetPos.x != player->getPosition().x || targetPos.y != player->getPosition().y)
             {
-                if (neighbors[i]->getCostF() < moveTo->getCostF())
+
+                int diffX = player->getPosition().x - targetPos.x;
+                int diffY = player->getPosition().y - targetPos.y;
+
+
+                if (diffX > 0)
                 {
-                    moveTo = neighbors[i];
+                    player->move(Left);
                 }
-                else if (neighbors[i]->getCostF() == moveTo->getCostF() && neighbors[i]->costH < moveTo->costH)
-                    moveTo = neighbors[i];
+                else if (diffX < 0)
+                {
+                    player->move(Right);
+                }
+                else if (diffY > 0)
+                {
+                    player->move(Up);
+                }
+                else if (diffY < 0)
+                {
+                    player->move(Down);
+                }
 
             }
-
-            Vector2 coords = getTileCoords(moveTo);
-
-            if (coords.x < player->getPosition().x)
-                player->move(Left);
-            else if (coords.x > player->getPosition().x)
-                player->move(Right);
-            else if (coords.y < player->getPosition().y)
-                player->move(Up);
-            else if (coords.y > player->getPosition().y)
-                player->move(Down);
+            if (!path.empty())
+            {
+                path.pop_back();
+            }
         }
-        else
-        {
-            autoTraversing = false;
-        }
+
+    }
+    else
+    {
+        autoTraversing = false;
     }
 }
+
 
 void MapManager::checkForChests()
 {
@@ -904,7 +975,6 @@ void MapManager::checkWinCondition()
         {
             items.clear();
             this->generateMap();
-            this->calcCost();
 
             for (int i = 0; i < actors.size(); i++)
             {
