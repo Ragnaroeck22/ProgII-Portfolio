@@ -452,6 +452,8 @@ Vector2 MapManager::getTileCoords(std::shared_ptr<Tile> tile)
                 return {(float) i, (float) j};
         }
     }
+    // Shouldn't happen, this silences the warning
+    return {-500, -500};
 }
 
 

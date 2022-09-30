@@ -966,6 +966,7 @@ public:
                     }
                 }
         }
+        return false;
     }
 
     void createDemoInv() // Warning: removes all current items
