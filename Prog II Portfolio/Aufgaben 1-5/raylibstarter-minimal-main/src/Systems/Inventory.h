@@ -805,6 +805,24 @@ public:
         if (this->inventory.size() < this->slotCount)
         {
             this->inventory.push_back(item);
+
+            // Auto-Equip item if its strength value is better
+            // (Currently only rings have strength values, can be easily expanded to support more / all weapon types)
+            if (item.type == TypeRing)
+            {
+                if (!slotRing.empty())
+                {
+                    if (item.strength > slotRing[0].strength)
+                    {
+                        equipItem(inventory.size() - 1);
+                    }
+                }
+                else
+                {
+                    equipItem(inventory.size() - 1);
+                }
+            }
+
             calcWeight();
             return true;
         }

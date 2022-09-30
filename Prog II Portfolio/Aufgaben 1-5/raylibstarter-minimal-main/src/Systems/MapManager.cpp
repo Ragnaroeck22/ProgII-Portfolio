@@ -535,11 +535,13 @@ void MapManager::autoTraverse() {
 
     if (!player->myInventory->getOverencumbered()) {
 
-        if (IsKeyPressed(KEY_K)) {
+        if (IsKeyPressed(KEY_K))
+        {
             calcCost();
             std::shared_ptr<Tile> tileToTest = exit;
             path.clear();
-            while (tileToTest != nullptr) {
+            while (tileToTest != nullptr)
+            {
                 path.push_back(tileToTest);
                 tileToTest->drawPathIndicator = true;
                 tileToTest = tileToTest->parentTile;
@@ -549,31 +551,45 @@ void MapManager::autoTraverse() {
 
         if (autoTraversing) {
             // if (player->getPosition() != exitPos) doesn't work for some reason
-            if (player->getPosition().x != exitPos.x || player->getPosition().y != exitPos.y) {
-                Vector2 targetPos = getTileCoords(path.back());
-                if (targetPos.x != player->getPosition().x || targetPos.y != player->getPosition().y) {
+            if (player->getPosition().x != exitPos.x || player->getPosition().y != exitPos.y)
+            {
+                if (!path.empty())
+                {
+                    Vector2 targetPos = getTileCoords(path.back());
+                    if (targetPos.x != player->getPosition().x || targetPos.y != player->getPosition().y)
+                    {
 
-                    int diffX = player->getPosition().x - targetPos.x;
-                    int diffY = player->getPosition().y - targetPos.y;
+                        int diffX = player->getPosition().x - targetPos.x;
+                        int diffY = player->getPosition().y - targetPos.y;
 
 
-                    if (diffX > 0) {
-                        player->move(Left);
-                    } else if (diffX < 0) {
-                        player->move(Right);
-                    } else if (diffY > 0) {
-                        player->move(Up);
-                    } else if (diffY < 0) {
-                        player->move(Down);
+                        if (diffX > 0)
+                        {
+                            player->move(Left);
+                        }
+                        else if (diffX < 0)
+                        {
+                            player->move(Right);
+                        }
+                        else if (diffY > 0)
+                        {
+                            player->move(Up);
+                        }
+                        else if (diffY < 0)
+                        {
+                            player->move(Down);
+                        }
+
                     }
-
-                }
-                if (!path.empty()) {
-                    path.pop_back();
+                    if (!path.empty())
+                    {
+                        path.pop_back();
+                    }
                 }
             }
-
-        } else {
+        }
+        else
+        {
             autoTraversing = false;
         }
     }
